@@ -17,17 +17,17 @@ package com.nelsw;
 public class P2 extends AbstractProblem {
 
     @Override
-    int number() {
+    public int number() {
         return 2;
     }
 
     @Override
-    Object expected() {
+    public Object expected() {
         return 4613732;
     }
 
     @Override
-    Object actual() {
+    public Object actual() {
         int a, b = 0, c = 1, sum = 0;
         while (true) {
             a = b;

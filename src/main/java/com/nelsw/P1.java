@@ -13,17 +13,17 @@ import java.util.stream.IntStream;
 public class P1 extends AbstractProblem {
 
     @Override
-    int number() {
+    public int number() {
         return 1;
     }
 
     @Override
-    Object expected() {
+    public Object expected() {
         return 233_168;
     }
 
     @Override
-    Object actual() {
+    public Object actual() {
         return IntStream
                 .range(0, 1_000)
                 .boxed()

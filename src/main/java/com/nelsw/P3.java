@@ -18,17 +18,17 @@ import static java.math.BigInteger.ZERO;
 public class P3 extends AbstractProblem {
 
     @Override
-    int number() {
+    public int number() {
         return 3;
     }
 
     @Override
-    Object expected() {
+    public Object expected() {
         return 6_857L;
     }
 
     @Override
-    Object actual() {
+    public Object actual() {
         return solution("600851475143");
     }
 
