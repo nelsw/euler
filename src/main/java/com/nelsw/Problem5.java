@@ -1,5 +1,9 @@
 package com.nelsw;
 
+import lombok.extern.log4j.Log4j2;
+
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -12,20 +16,21 @@ import java.util.Set;
  * </p>
  * What is the smallest positive number that is evenly divisible by all of the numbers from 1 to 20?
  */
-public class P5 extends AbstractProblem {
+@Log4j2
+public class Problem5 {
 
-    @Override
-    public int number() {
-        return 5;
+    public Problem5() {
+        var then     = Instant.now();
+        var expected = 232_792_560;
+        var actual   = actual();
+        if (actual == expected) {
+            log.info("✅ - {} - {}", Duration.between(then, Instant.now()), actual);
+        } else {
+            log.warn("❌");
+        }
     }
 
-    @Override
-    public Object expected() {
-        return 232_792_560;
-    }
-
-    @Override
-    public Object actual() {
+    public int actual() {
         int alpha = 1, omega = 20, lcm = 0;
         for (int i = omega; i >= alpha; i--) {
             if (lcm > omega) {
@@ -59,8 +64,8 @@ public class P5 extends AbstractProblem {
 
     private Map<Integer, Integer> primeFactors(int number) {
 
-        int                   absNumber       = Math.abs(number);
         Map<Integer, Integer> primeFactorsMap = new HashMap<>();
+        int                   absNumber       = Math.abs(number);
 
         for (int factor = 2; factor <= absNumber; factor++) {
 

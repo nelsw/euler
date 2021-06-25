@@ -1,6 +1,10 @@
 package com.nelsw;
 
+import lombok.extern.log4j.Log4j2;
+
 import java.math.BigInteger;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,27 +19,22 @@ import static java.math.BigInteger.ZERO;
  * <p>
  * What is the largest prime factor of the number 600851475143 ?
  */
-public class P3 extends AbstractProblem {
+@Log4j2
+public class Problem3 {
 
-    @Override
-    public int number() {
-        return 3;
+    public Problem3(long expected) {
+        var then = Instant.now();
+        if (actual() == expected) {
+            log.info("✅ - {} - {}", Duration.between(then, Instant.now()), expected);
+        } else {
+            log.warn("❌");
+        }
     }
 
-    @Override
-    public Object expected() {
-        return 6_857L;
-    }
-
-    @Override
-    public Object actual() {
-        return solution("600851475143");
-    }
-
-    private Object solution(String k) {
+    private long actual() {
 
         // jic k > Integer.MAX_VALUE
-        BigInteger n = new BigInteger(k);
+        BigInteger n = new BigInteger("600851475143");
 
         // divide n in half until it becomes an odd number
         while (n.mod(TWO).equals(ZERO)) {

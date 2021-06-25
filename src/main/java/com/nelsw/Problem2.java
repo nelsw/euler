@@ -1,5 +1,10 @@
 package com.nelsw;
 
+import lombok.extern.log4j.Log4j2;
+
+import java.time.Duration;
+import java.time.Instant;
+
 /**
  * Problem 2 - Even Fibonacci numbers
  * <p>
@@ -14,20 +19,20 @@ package com.nelsw;
  * <p>
  * What is the largest prime factor of the number 600851475143 ?
  */
-public class P2 extends AbstractProblem {
+@Log4j2
+public class Problem2 {
 
-    @Override
-    public int number() {
-        return 2;
+    public Problem2(int expected) {
+        var then   = Instant.now();
+        var actual = actual();
+        if (actual == expected) {
+            log.info("✅ - {} - {}", Duration.between(then, Instant.now()), actual);
+        } else {
+            log.warn("❌");
+        }
     }
 
-    @Override
-    public Object expected() {
-        return 4613732;
-    }
-
-    @Override
-    public Object actual() {
+    private int actual() {
         int a, b = 0, c = 1, sum = 0;
         while (true) {
             a = b;
