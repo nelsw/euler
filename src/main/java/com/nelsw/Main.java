@@ -13,6 +13,7 @@ public class Main {
         new Problem5();
         new Problem6();
         new Problem60();
+        new ProblemHackerRank();
     }
 
 }
