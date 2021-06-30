@@ -1,4 +1,4 @@
-package com.nelsw;
+package com.nelsw.euler;
 
 import lombok.extern.log4j.Log4j2;
 
