@@ -1,4 +1,4 @@
-package com.nelsw;
+package com.nelsw.euler;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;

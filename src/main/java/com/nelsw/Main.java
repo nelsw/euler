@@ -1,5 +1,6 @@
 package com.nelsw;
 
+import com.nelsw.hackerrank.SwapNodes;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -14,7 +15,7 @@ public class Main {
 //        new Problem6();
 //        new Problem60();
 //        new ProblemHackerRank();
-        new ProblemHackerRankV2();
+        new SwapNodes();
     }
 
 }
