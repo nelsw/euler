@@ -1,143 +1,26 @@
 package com.nelsw.hackerrank;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.log4j.Log4j2;
 
+import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+@Log4j2
 public class SwapNodes {
 
-    public SwapNodes() {
-
-        var indexes = List.of(
-                List.of(2, 3),
-                List.of(4, -1),
-                List.of(5, -1),
-                List.of(6, -1),
-                List.of(7, 8),
-                List.of(-1, 9),
-                List.of(-1, -1),
-                List.of(10, 11),
-                List.of(-1, -1),
-                List.of(-1, -1),
-                List.of(-1, -1));
-
-//        indexes = List.of(
-//                List.of(2, 3),
-//                List.of(4, 5),
-//                List.of(6, -1),
-//                List.of(-1, 7),
-//                List.of(8, 9),
-//                List.of(10, 11),
-//                List.of(12, 13),
-//                List.of(-1, 14),
-//                List.of(-1, -1),
-//                List.of(15, -1),
-//                List.of(16, 17),
-//                List.of(-1, -1),
-//                List.of(-1, -1),
-//                List.of(-1, -1),
-//                List.of(-1, -1),
-//                List.of(-1, -1),
-//                List.of(-1, -1));
-
-        var queries = List.of(2, 4);
-
-//        queries = List.of(2, 3);
-
-        var result = swapNodes(indexes, queries);
-
-        var expected = List.of(
-                List.of(2, 9, 6, 4, 1, 3, 7, 5, 11, 8, 10),
-                List.of(2, 6, 9, 4, 1, 3, 7, 5, 10, 8, 11)
-        );
-
-//        expected = List.of(
-//                List.of(14, 8, 5, 9, 2, 4, 13, 7, 12, 1, 3, 10, 15, 6, 17, 11, 16),
-//                List.of(9, 5, 14, 8, 2, 13, 7, 12, 4, 1, 3, 17, 11, 16, 6, 10, 15)
-//        );
-
-        System.out.println();
-        System.out.println(Arrays.toString(result.toArray()));
-        System.out.println(Arrays.toString(expected.toArray()));
-    }
-
-    public static List<List<Integer>> swapNodes(List<List<Integer>> indexes, List<Integer> queries) {
-
-        // make a tree
-        Map<Integer, List<Integer>> tree = new HashMap<>();
-        for (int i = 0; i < indexes.size(); i++) {
-            if (i == 0) {
-                tree.put(1, indexes.get(i));
-            } else {
-                tree.put(i + 1, indexes.get(i));
-                tree.put(i + 2, indexes.get(i));
-            }
-        }
-
-        // map the depths
-        Map<Integer, List<List<Integer>>> levels = new HashMap<>();
-        for (int i = 1; i < tree.size(); i++) {
-
-            int level = i + 1;
-            if (level == 2) {
-                List<List<Integer>> list = new ArrayList<>();
-                list.add(tree.get(1));
-                levels.put(level, list);
-                continue;
-            }
-
-            List<List<Integer>> result = new ArrayList<>();
-            if (levels.containsKey(level - 1)) {
-                for (List<Integer> pair : levels.get(level - 1)) {
-                    for (Integer key : pair) {
-                        if (key != -1) {
-                            result.add(tree.get(key));
-                        }
-                    }
-                }
-                if (!result.isEmpty()) {
-                    levels.put(level, result);
-                }
-            }
-        }
-
-        // collect results
-        List<List<Integer>> results = new ArrayList<>();
-        for (Integer query : queries) {
-            for (int i = 1; i <= levels.size() / query; i++) {
-                int q = (i * query) + 1;
-                levels.put(q, levels
-                        .get(q)
-                        .stream()
-                        .map(l -> Arrays.asList(l.get(1), l.get(0)))
-                        .collect(Collectors.toList()));
-            }
-            results.add(results(levels));
-        }
-
-        return results;
-    }
-
-    private static List<Integer> results(Map<Integer, List<List<Integer>>> levels) {
-
-        Map<Integer, List<Integer>> tree = new HashMap<>();
-
-        int i = 1;
-        for (List<List<Integer>> list : levels.values()) {
-            for (List<Integer> pair : list) {
-                tree.put(i++, pair);
-            }
-        }
-
-        List<Integer> results = new ArrayList<>();
-
-        Node root = node(tree, 1);
-
-        traverse(results, root.left);
-        results.add(1);
-        traverse(results, root.right);
-
-        return results;
-    }
+    static Predicate<Map.Entry<Integer, List<List<Integer>>>>
+            isNotEmpty     = e -> !e.getValue().isEmpty(),
+            isNotAllLeaves = e -> !e.getValue().stream().allMatch(l -> l.equals(Arrays.asList(-1, -1)));
+    static Collector<Map.Entry<Integer, List<List<Integer>>>, ?, Map<Integer, List<List<Integer>>>> depthMap =
+            Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue);
+    static Function<List<Integer>, List<Integer>>                                                   toSwap   = l -> Arrays.asList(l.get(1), l.get(0));
 
     private static Node node(Map<Integer, List<Integer>> oak, int data) {
         if (!oak.containsKey(data)) {
@@ -201,25 +84,128 @@ public class SwapNodes {
 
         traverse(results, node.left);
         traverse(results, node.right);
+    }
 
-        if (!results.contains(d)) {
-            results.add(d);
+
+    public SwapNodes() {
+
+        var indexes = List.of(
+                List.of(2, 3),
+                List.of(4, 5),
+                List.of(6, -1),
+                List.of(-1, 7),
+                List.of(8, 9),
+                List.of(10, 11),
+                List.of(12, 13),
+                List.of(-1, 14),
+                List.of(-1, -1),
+                List.of(15, -1),
+                List.of(16, 17),
+                List.of(-1, -1),
+                List.of(-1, -1),
+                List.of(-1, -1),
+                List.of(-1, -1),
+                List.of(-1, -1),
+                List.of(-1, -1));
+
+        var queries = List.of(2, 3);
+
+        var actual = swapNodes(indexes, queries);
+
+        var expected = List.of(
+                List.of(14, 8, 5, 9, 2, 4, 13, 7, 12, 1, 3, 10, 15, 6, 17, 11, 16),
+                List.of(9, 5, 14, 8, 2, 13, 7, 12, 4, 1, 3, 17, 11, 16, 6, 10, 15)
+        );
+
+        if (!actual.equals(expected)) {
+            throw new Error();
         }
     }
 
+    public static List<List<Integer>> swapNodes(List<List<Integer>> indexes, List<Integer> queries) {
+
+        // create a map of the given indexes
+        Map<Integer, List<Integer>> index = IntStream
+                .range(0, indexes.size())
+                .boxed()
+                .collect(Collectors.toMap(i -> i + 1, indexes::get));
+
+        // create a map of depths from our index map
+        Map<Integer, List<List<Integer>>> depth = new HashMap<>();
+
+        // root the map with initial indexes
+        depth.put(2, Collections.singletonList(index.get(1)));
+
+        // for depth after, put a list of indexes from previous indices
+        for (int i = 2; i < index.size(); i++) {
+            depth.put(i + 1, depth
+                    .get(i)
+                    .stream()
+                    .map(toBranch(index))
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toList()));
+        }
+
+        // filter out empty lists and the final row of all leaves
+        depth = depth
+                .entrySet()
+                .stream()
+                .filter(isNotEmpty.and(isNotAllLeaves))
+                .collect(SwapNodes.depthMap);
+
+        // collect results of each multiple of each query
+        List<List<Integer>> results = new ArrayList<>();
+
+        // for each given query
+        for (Integer query : queries) {
+
+            // for each multiple of dividing depth size by query value
+            for (int i = 1; i <= depth.size() / query; i++) {
+
+                // children of the node are swapped, so depth + 1
+                int q = (i * query) + 1;
+                depth.put(q, depth.get(q).stream().map(toSwap).collect(Collectors.toList()));
+            }
+
+            // reconstitute a swapped index map
+            var swapped = new HashMap<Integer, List<Integer>>();
+            int i       = 1;
+            for (List<List<Integer>> list : depth.values()) {
+                for (List<Integer> pair : list) {
+                    swapped.put(i++, pair);
+                }
+            }
+
+            // build a tree from the index map
+            Node root = node(swapped, 1);
+
+            // traverse the result
+            List<Integer> result = new ArrayList<>();
+            traverse(result, root.left);
+            result.add(1);
+            traverse(result, root.right);
+
+            // add the result to the final results
+            results.add(result);
+        }
+
+        depth.entrySet().forEach(log::debug);
+
+        return results;
+    }
+
+    private static Function<List<Integer>, List<List<Integer>>> toBranch(Map<Integer, List<Integer>> index) {
+        return pair -> pair
+                .stream()
+                .filter(k -> k > 0)
+                .map(index::get)
+                .collect(Collectors.toList());
+    }
+
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+    @RequiredArgsConstructor
     private static class Node {
-
-        int data;
-
+        int  data;
         Node left, right;
-
-        public Node(int data, Node left, Node right) {
-            this.data  = data;
-            this.left  = left;
-            this.right = right;
-        }
-
     }
-
-
 }
