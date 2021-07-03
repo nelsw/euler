@@ -12,10 +12,10 @@
     </parent>
 
     <groupId>com.nelsw</groupId>
-    <artifactId>euler</artifactId>
+    <artifactId>solutions</artifactId>
     <version>1.0.1</version>
     <name>euler</name>
-    <description>Project for encapsulating Project Euler solutions.</description>
+    <description>Project for encapsulating various DS, Algo, and Java solutions.</description>
 
     <properties>
         <java.version>11</java.version>
@@ -41,6 +41,12 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
             <version>3.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.8.0-M1</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

@@ -20,9 +20,9 @@ import java.util.Set;
 public class Problem5 {
 
     public Problem5() {
-        var then     = Instant.now();
-        var expected = 232_792_560;
-        var actual   = actual();
+        Instant then     = Instant.now();
+        int     expected = 232_792_560;
+        int     actual   = actual();
         if (actual == expected) {
             log.info("✅ - {} - {}", Duration.between(then, Instant.now()), actual);
         } else {
