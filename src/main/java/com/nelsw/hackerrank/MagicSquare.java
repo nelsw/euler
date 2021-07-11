@@ -7,7 +7,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 @Log4j2
 public class MagicSquare {
@@ -25,307 +24,115 @@ public class MagicSquare {
 
     public static int formingMagicSquare(List<List<Integer>> s) {
 
-        List<Integer> p = s.stream().flatMap(Collection::stream).collect(Collectors.toList());
+        List<Integer> origin = s.stream().flatMap(Collection::stream).collect(Collectors.toList());
 
-        Map<Integer, Integer> points = new HashMap<>();
-        for (int i = 0; i < p.size(); i++) {
-            points.put(i, p.get(i));
+        Map<Integer, Integer> p = new HashMap<>();
+        for (int i = 0; i < 9; i++) {
+            p.put(i, origin.get(i));
         }
 
         System.out.println("points");
-        points.entrySet().forEach(System.out::println);
+        p.entrySet().forEach(System.out::println);
         System.out.println();
 
-        Map<Integer, Integer> map = IntStream.range(0, eqs.size()).boxed().collect(Collectors.toMap(i -> i, sum(p)));
-
-        System.out.println("sums");
-        map.values().forEach(print);
-        System.out.println();
-
-        int mode = mode(map.values());
-
-        System.out.println("mode");
-        System.out.println(mode);
-        System.out.println();
-
-        List<Integer> keys = map.entrySet().stream().filter(e -> !e.getValue().equals(mode)).map(Map.Entry::getKey).collect(Collectors.toList());
-
-        System.out.println("keys");
-        keys.forEach(print);
-        System.out.println();
-
-        List<Integer> all = keys.stream().map(eqs::get).flatMap(Collection::stream).sorted().collect(Collectors.toList());
-
-        List<Integer> indexes = new ArrayList<>();
-        while (!all.isEmpty()) {
-            int thisMode = mode(all);
-            indexes.add(thisMode);
-            all.removeAll(Collections.singletonList(thisMode));
-        }
-
-        System.out.println("indexes");
-        indexes.forEach(print);
-        System.out.println();
-
-        int x1 = indexes.get(0);
-        int x2 = indexes.get(1);
-        int x3 = indexes.get(2);
-
-        List<List<Integer>> problems = keys
-                .stream()
-                .map(eqs::get)
-                .sorted((o1, o2) -> {
-
-                    if (o1.contains(x1) && o1.contains(x2) && o1.contains(x3) &&
-                            o2.contains(x1) && o2.contains(x2) && !o2.contains(x3)) {
-                        return -1;
-                    }
-
-                    if (o1.contains(x1) && o1.contains(x2) && !o1.contains(x3) &&
-                            o2.contains(x1) && o2.contains(x2) && o2.contains(x3)) {
-                        return 1;
-                    }
-
-                    if (o1.contains(x1) && o1.contains(x2) &&
-                            o2.contains(x1) && !o2.contains(x2)) {
-                        return -1;
-                    }
-
-                    if (o1.contains(x1) && !o1.contains(x2) &&
-                            o2.contains(x1) && o2.contains(x2)) {
-                        return 1;
-                    }
-
-                    if (o1.contains(x1) && !o2.contains(x1)) {
-                        return -1;
-                    }
-
-                    if (!o1.contains(x1) && o2.contains(x1)) {
-                        return 1;
-                    }
-
-                    return 0;
-                })
-                .collect(Collectors.toList());
-
-        System.out.println("problems");
-        problems.forEach(print);
-        System.out.println();
-
-
-        var c = cost(p, indexes);
-        if (c != 0) {
-            return c;
-        }
-
-        return foo(p, indexes, problems, mode);
-    }
-
-    private static Comparator<Integer> bySeverity(List<Integer> indexes) {
-        return (o1, o2) -> {
-            if (o1.equals(indexes.get(0)) || o1.equals(indexes.get(1))) {
-                return -1;
-            }
-            if (o2.equals(indexes.get(0)) || o2.equals(indexes.get(1))) {
-                return 1;
-            }
-            return o1.compareTo(o2);
-        };
-    }
-
-
-    private static int foo(List<Integer> p, List<Integer> indexes, List<List<Integer>> problems, int mode) {
-
-        int cost = 0;
-
-
-        for (List<Integer> problem : problems) {
-
-            problem.sort(bySeverity(indexes));
-
-            int x = p.get(problem.get(0));
-            int y = p.get(problem.get(1));
-            int z = p.get(problem.get(2));
-
-            int sum = x + y + z;
-
-            System.out.println("sum " + sum);
-
-            for (int i = 1; i < 10; i++) {
-
-                x = x + i;
-                if (x > 9) {
-                    x = x - 9;
-                }
-
-                boolean found = Stream.of(x, y, z).mapToInt(Integer::intValue).sum() == mode;
-
-                if (found) {
-
-                    p = swap(p, problem.get(0), x);
-                    p = swap(p, problem.get(1), y);
-                    p = swap(p, problem.get(2), z);
-
-                    if (isMagicSquare(p)) {
-                        System.out.println("yeah boy");
-                        return cost;
-                    }
-                    break;
-                }
-
-                for (int j = 1; j < 10; j++) {
-
-                    y = y + j;
-                    if (y > 9) {
-                        y = y - 9;
-                    }
-
-
-                    found = Stream.of(x, y, z).mapToInt(Integer::intValue).sum() == mode;
-                    if (found) {
-                        p = swap(p, problem.get(0), x);
-                        p = swap(p, problem.get(1), y);
-                        p = swap(p, problem.get(2), z);
-                        if (isMagicSquare(p)) {
-                            System.out.println("yeah boy");
-                            return cost;
-                        }
-                        break;
-                    }
-
-
-                    for (int k = 1; k < 10; k++) {
-                        z = z + k;
-                        if (z > 9) {
-                            z = z - 9;
-                        }
-
-                        found = Stream.of(x, y, z).mapToInt(Integer::intValue).sum() == mode;
-                        if (found) {
-                            p = swap(p, problem.get(0), x);
-                            p = swap(p, problem.get(1), y);
-                            p = swap(p, problem.get(2), z);
-                            if (isMagicSquare(p)) {
-                                System.out.println("yeah boy");
-                                return cost;
-                            }
-                            break;
-                        }
-                    }
-                    if (found) {
-                        break;
-                    }
-                }
-                if (found) {
-                    break;
-                }
-            }
-        }
-
-        if (isMagicSquare(p)) {
-            System.out.println("yeah boy");
-            return cost;
-        }
-
-        return 0;
-    }
-
-    private static int cost(List<Integer> p, List<Integer> indexes) {
-
-        List<Integer> c = result(p, indexes);
-
-        if (!c.isEmpty()) {
-            return c.get(0);
-        }
-
-        return 0;
-    }
-
-    private static List<Integer> result(List<Integer> p, List<Integer> indexes) {
-        return result(p, indexes, 0);
-    }
-
-    private static List<Integer> result(List<Integer> p, List<Integer> indexes, int start) {
-        return IntStream.range(1, 5)
-                .boxed()
-                .map(i ->
-                        IntStream.range(start, indexes.size())
-                                .boxed()
-                                .map(j -> cost(p, indexes, i, j, 0))
-                                .collect(Collectors.toList())
-                )
-                .flatMap(Collection::stream)
-                .filter(i -> i > 0)
-                .sorted()
-                .collect(Collectors.toList());
-    }
-
-    private static List<Integer> swapDn(List<Integer> p, int idx, int i) {
-        int x = p.get(idx) - i;
-        if (x < 1) {
-            x = 9 - x;
-        }
-        return swap(p, idx, x);
-    }
-
-    private static List<Integer> swapUp(List<Integer> p, int idx, int i) {
-        int x = p.get(idx) + i;
-        if (x > 9) {
-            x = x - 9;
-        }
-        return swap(p, idx, x);
-    }
-
-    private static List<Integer> swap(List<Integer> p, int idx, int x) {
-        List<Integer> t = new ArrayList<>(p);
-        t.remove(idx);
-        t.add(idx, x);
-        return t;
-    }
-
-    private static int cost(List<Integer> p, List<Integer> indexes, int i, int j, int sum) {
-
-        if (j >= indexes.size()) {
-            return 0;
-        }
-
-        sum += i;
-
-        int idx = indexes.get(j);
-
-        List<Integer> t1 = swapUp(p, idx, i);
-        if (isMagicSquare(t1)) {
-            return sum;
-        }
-
-        List<Integer> t2 = swapDn(p, idx, i);
-        if (isMagicSquare(t2)) {
-            return sum;
-        }
-
-        int cost = cost(t1, indexes, i, j + 1, sum);
-        if (cost != 0) {
-            return cost;
-        }
-
-        return cost(t2, indexes, i, j + 1, sum);
-    }
-
-
-    private static Function<Integer, Integer> sum(List<Integer> v) {
-        return i -> eqs.get(i).stream().parallel().mapToInt(v::get).sum();
-    }
-
-    private static boolean isMagicSquare(List<Integer> v) {
-
-        Collection<Integer> values = IntStream
+        int m = mode(IntStream
                 .range(0, eqs.size())
+                .boxed()
+                .collect(Collectors.toMap(i -> i, i -> eqs.get(i).stream().parallel().mapToInt(p::get).sum()))
+                .values());
+
+        System.out.println("mode " + m);
+        System.out.println();
+
+        List<Integer> r = IntStream.range(0, 6).boxed().collect(Collectors.toList());
+
+        List<Integer> c = new ArrayList<>();
+
+        r.stream().takeWhile(i -> c.isEmpty()).forEach(i1 -> {
+
+            magic(p, m, 0, 0, i1).ifPresent(c::add);
+
+            r.stream().takeWhile(i -> c.isEmpty()).forEach(i2 -> {
+
+                magic(p, m, i1, 1, i2).ifPresent(c::add);
+
+                r.stream().takeWhile(i -> c.isEmpty()).forEach(i3 -> {
+
+                    magic(p, m, i1 + i2, 2, i3).ifPresent(c::add);
+
+                    r.stream().takeWhile(i -> c.isEmpty()).forEach(i4 -> {
+
+                        magic(p, m, i1 + i2 + i3, 3, i4).ifPresent(c::add);
+
+                        r.stream().takeWhile(i -> c.isEmpty()).forEach(i5 -> {
+
+                            magic(p, m, i1 + i2 + i3 + i4, 4, i5).ifPresent(c::add);
+
+                            r.stream().takeWhile(i -> c.isEmpty()).forEach(i6 -> {
+
+                                magic(p, m, i1 + i2 + i3 + i4 + i5, 5, i6).ifPresent(c::add);
+
+                                r.stream().takeWhile(i -> c.isEmpty()).forEach(i7 -> {
+
+                                    magic(p, m, i1 + i2 + i3 + i4 + i5 + i6, 6, i7).ifPresent(c::add);
+
+                                    r.stream().takeWhile(i -> c.isEmpty()).forEach(i8 -> {
+
+                                        magic(p, m, i1 + i2 + i3 + i4 + i5 + i6 + i7, 7, i8).ifPresent(c::add);
+
+                                        r.stream().takeWhile(i -> c.isEmpty()).forEach(i9 -> {
+
+                                            magic(p, m, i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8, 8, i9).ifPresent(c::add);
+
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+
+        c.forEach(print);
+
+        return c.stream().mapToInt(Integer::intValue).min().getAsInt();
+    }
+
+    private static OptionalInt magic(Map<Integer, Integer> points, int mode, int sum, int idx, int i) {
+
+        int v = points.get(idx), w = v + i;
+
+        if (w > 9) {
+            w = w - 9;
+        }
+
+        points.put(idx, w);
+        if (magic(points, mode)) {
+            return OptionalInt.of(sum + i);
+        }
+
+        int x = v - i;
+        if (x < 0) {
+            x = 9 + x;
+        }
+
+        points.put(idx, x);
+        if (magic(points, mode)) {
+            return OptionalInt.of(sum + i);
+        }
+
+        return OptionalInt.empty();
+
+    }
+
+    private static boolean magic(Map<Integer, Integer> p, int mode) {
+        return IntStream
+                .range(0, 8)
                 .parallel()
                 .boxed()
-                .collect(Collectors.toMap(i -> i, sum(v)))
-                .values();
-
-        return values.stream().allMatch(i -> i.equals(mode(values)));
+                .mapToInt(i -> eqs.get(i).stream().parallel().mapToInt(p::get).sum())
+                .allMatch(i -> i == mode);
     }
 
     private static int mode(Collection<Integer> list) {
