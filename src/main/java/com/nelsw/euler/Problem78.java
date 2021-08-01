@@ -40,7 +40,6 @@ public class Problem78 {
         for (int i = 1; i < n / 2; i++) {
             var t1 = new ArrayList<>(List.of(n - i, i));
             t1.sort((o1, o2) -> o1.compareTo(o2));
-            t1.su
             Collections.sort(t1);
             r.add(t1);
         }
