@@ -28,6 +28,10 @@ import java.math.BigInteger;
  */
 public class Problem25 {
 
+    public static void main(String[] args) {
+        new Problem25();
+    }
+
     public Problem25() {
         int  expected = 4782;
         long start    = System.currentTimeMillis();
@@ -39,20 +43,43 @@ public class Problem25 {
 
     private int solve() {
 
-        int t = 2;
-
+        // For this problem to complete in a timely manner,
+        // we MUST use immutable objects to leave the smallest
+        // memory footprint and leverage the performance of
+        // encapsulated functions for performing semantic
+        // arithmetic operations over arbitrary precision
+        // numbers. Thus, we'll use BigInteger, a Java 1.1 OG.
         BigInteger
-                a = BigInteger.ONE,
-                b = BigInteger.ONE,
-                c = BigInteger.TWO;
+                a = BigInteger.ONE, // Fibonacci term 1 at index 0
+                b = BigInteger.ONE, // Fibonacci term 2 at index 1
+                c = BigInteger.TWO; // Fibonacci term 3 at index 2
 
+        int i = 2; // Fibonacci term index counter
+
+        // while the String value length of this
+        // number is less than 1,000 digits ...
+        while (c.toString().length() < 1000) {
+            c = a.add(b); // move forward in the sequence by one position
+            a = b;
+            b = c;
+            i++; // and increment the index counter by one
+        }
+
+        // if we're here, we've exited our while loop
+        // and found the first integer in the Fibonacci
+        // sequence to contain 1,000 digits
+        return i;
+    }
+
+    private int solve2() {
+        BigInteger a = BigInteger.ONE, b = BigInteger.ONE, c = BigInteger.TWO;
+        int        i = 2;
         while (c.toString().length() < 1000) {
             c = a.add(b);
             a = b;
             b = c;
-            ++t;
+            i++;
         }
-
-        return t;
+        return i;
     }
 }
